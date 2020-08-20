@@ -1,3 +1,6 @@
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 public class graph{
@@ -37,6 +40,7 @@ public class graph{
         addEdge(0, 3, 10);
         addEdge(1, 2, 10);
         addEdge(2, 3, 40);
+        // addEdge(2, 5, 10);
         addEdge(3, 4, 2);
         addEdge(4, 5, 2);
         addEdge(4, 6, 8);
@@ -126,58 +130,112 @@ public class graph{
         
     }
 
-    public static void gcc()
 
-    public static int hamiltoninanPathAndCycle(int src, int origsrc, int edgeCount, boolean[] vis, String ans){
-        if(edgeCount == N-1){
-            int idx = findEdge(src, origsrc);
-            if(idx!=-1){
-                System.out.println("Cycle : "+ src + ans);
+    public static void gcc(){
+        
+        ArrayList<ArrayList<Integer>>comps = new ArrayList<>();
+        boolean[] visited = new boolean[N];
+        for(int i = 0;i<N;i++){
+            if(visited[i]!=true){
+                ArrayList<Integer>comp = new ArrayList<>();
+                drawtreeComponents(i,visited,comp);
+                comps.add(comp);
+            }
+        }
+        System.out.println(comps);
+        
+    }
+    
+
+    public static void drawtreeComponents(int src, boolean[] visited,ArrayList<Integer>comp){
+        visited[src] = true;
+        comp.add(src);
+        for(Edge e : graph[src]){
+            if(visited[e.v]!=true){
+                drawtreeComponents(e.v,visited,comp);
+            }
+        }
+    }
+
+    public static void isConnected(){
+        
+        ArrayList<ArrayList<Integer>>comps = new ArrayList<>();
+        boolean[] visited = new boolean[N];
+        for(int i = 0;i<N;i++){
+            if(visited[i]!=true){
+                ArrayList<Integer>comp = new ArrayList<>();
+                drawtreeComponents(i,visited,comp);
+                comps.add(comp);
+            }
+        }
+        System.out.println(comps.size()==1);
+        
+    }
+
+
+    public static void NoOfIslands(int[][] arr){
+        
+        int count = 0;
+        boolean[][] visited = new boolean[arr.length][arr[0].length];
+
+        for(int i=0;i<arr.length;i++){
+            for(int j = 0; j<arr[i].length;j++){
+                if(arr[i][j] ==0 && visited[i][j] !=true){
+                    drawComponents(arr,i,j,visited);
+                    count++;
+                }
+            }
+        }
+
+        System.out.print(count);
+    }
+
+    public static void drawComponents(int[][] arr, int i, int j, boolean[][] visited){
+        if(i<0 || j<0 || i>=arr.length || j>=arr[0].length || arr[i][j] == 1 || visited[i][j] == true){
+            return ;
+        }
+        
+        visited[i][j] = true;
+
+        drawComponents(arr,i,j-1,visited);
+        drawComponents(arr,i-1,j,visited);
+        drawComponents(arr,i+1,j,visited);
+        drawComponents(arr,i,j+1,visited);
+    }
+
+
+    public static void hamiltonian(int src,HashSet<Integer> visited, String psf, int osrc){
+        if(visited.size() == graph.length-1){
+            System.out.print(psf);
+            boolean closingEdgFound = false;
+            for(Edge e:graph[src]){
+                if(e.v == osrc){
+                    closingEdgFound = true;
+                    break;
+                }
+                
+            }
+
+            if(closingEdgFound == true){
+                System.out.println(" : Hcycle");
             }else{
-                System.out.println("path : "+ src + ans);
+                System.out.println(" : Hpath");
             }
 
+            return;
         }
-        
-
-        
-        vis[src] = true;
         int count = 0;
+        visited.add(src);
         for(Edge e:graph[src]){
-            if(vis[e.v]!=true){
-                count += hamiltoninanPathAndCycle(e.v, origsrc, edgeCount+1, vis, ans + src + " ");
+            if(visited.contains(e.v)!=true){
+                hamiltonian(e.v,visited,psf+e.v,osrc);
+                count++;
             }
         }
-
-        vis[src] = false;
+        visited.remove(src);
+        // System.out.println(count);
+    }
         
-        return count;
-    }
-
-    public static void GCC_DFS(int src, boolean [] vis){
-        vis[src] = true;
-        for(Edge e:graph[src]){
-            if(vis[e.v]!=true){
-                GCC_DFS(e.v, vis);
-            }
-        }
-    }
-
-    public static int GCC(){
-        boolean[]vis = new boolean[N];
-        int count = 0;
-        for(int i=0;i<N;i++){
-            if(vis[i]!=true){
-                GCC_DFS(i, vis);
-                count++;    
-            }            
-        }
-        return count;
-    }
-    
- 
-
-    
     public static void solve(){ 
         
         // removeEdge(1, 2);
@@ -194,14 +252,226 @@ public class graph{
 
         // largestPath(src, dest, vis, 0, src + "");
 
+        // gcc();
 
-        // System.out.println(hamiltoninanPathAndCycle(0, 0, 0, vis, "")); 
+        // isConnected();
 
-        // System.out.println(GCC()); 
+        // int[][] arr = {{0,0,1,1,1,1},{0,0,1,1,1,1},{1,1,0,0,1,0},{1,1,1,0,1,0},{1,1,1,0,1,0},{1,1,1,1,1,0}};
+        // NoOfIslands(arr);
+        
+        // boolean[] visited = new boolean[N];
+
+        // HashSet<Integer> visited = new HashSet<>();
+        // int src=0;
+        // hamiltonian(src,visited,src+"",src); 
     }
+
+
+    public static class Pair{
+        int v;
+        String psf;
+
+        Pair(int v, String psf){
+            this.v = v;
+            this.psf = psf;
+        }
+        
+    }
+
+    public static void printBfs(int src, String psf){
+        ArrayDeque<Pair> queue = new ArrayDeque<>();
+        queue.add(new Pair(src,src+""));
+        boolean[] visited = new boolean[N];
+        while(queue.size()!=0){
+            
+            // remove
+            Pair rem = queue.removeFirst();
+            
+            // mark*
+            if(visited[rem.v]==true){
+                continue;
+            }else{
+                visited[rem.v] = true;
+            }
+
+            //work
+            System.out.println(rem.v+" @ "+rem.psf);
+            
+            // add*
+            for(Edge e: graph[rem.v]){
+                if(visited[e.v]==false){
+                    queue.add(new Pair(e.v,rem.psf+e.v));
+                }
+            }
+        }
+    }
+
+    public static void cycle(){
+        boolean[] visited = new boolean[N];
+        for(int i=0;i<N;i++){
+            if(visited[i]==false){
+                boolean cyclePresent = isCycle(i,visited);
+                if(cyclePresent){
+                    System.out.println(true);
+                    return;
+                }
+            }
+        }
+        System.out.println(false);
+    }
+    public static boolean isCycle(int src, boolean[] visited){
+        ArrayDeque<Pair> que = new ArrayDeque<>();
+        que.add(new Pair(src,src+""));
+
+        while(que.size()>0){
+            // remove
+            Pair rem = que.removeFirst();
+            // mark
+            if(visited[rem.v]!=false){
+                return true;
+            }              
+            visited[rem.v] = true;
+            // add unvisited neighbours
+
+            for(Edge e:graph[rem.v]){
+                if(visited[e.v]!=true){
+                    que.add(new Pair(e.v,rem.psf+e.v));
+                }
+            }
+        }
+        return false;
+    }
+    
+    public static void bfs(){
+        // int src = 2;
+        // printBfs(src,src+"");
+
+        cycle();
+    }
+
+    public static class Pair_2{
+        int v;
+        String psf;
+        int level;
+
+        Pair_2(int v, String psf, int level){
+            this.v = v;
+            this.psf = psf;
+            this.level = level;
+        }
+    }
+
+    public static void bipartite(){
+        int[] visited = new int[N];
+        Arrays.fill(visited,-1);
+        for(int i=0;i<N;i++){
+            if(visited[i] == -1){
+                boolean isComponentBipartite = compBipartite(i,visited);
+                if(isComponentBipartite == false){
+                    System.out.print(false);
+                    return;
+                }
+            }
+        }
+
+        System.out.print(true);
+    }
+
+    public static boolean compBipartite(int src, int[] visited){
+        ArrayDeque<Pair_2> que = new ArrayDeque<>();
+        que.add(new Pair_2(src,src+"",0));
+
+        while(que.size()>0){
+            // remove
+
+            Pair_2 rem = que.removeFirst();
+
+            // mark
+
+            if(visited[rem.v]!=-1){
+                // to do some work
+                if(rem.level != visited[rem.v]){
+                    return false;
+                }  
+            }else{
+                visited[rem.v] = rem.level;
+            }
+            
+            // add value
+            for(Edge e : graph[rem.v]){
+                if(visited[e.v]==-1){
+                    que.add(new Pair_2(e.v,rem.psf+e.v,rem.level+1));
+                }
+            }
+        }
+        return true;
+    }
+
+
+    
+    public static class Pair_3{
+        int v;
+        int n;
+
+        Pair_3(int v, int n){
+            this.v = v;
+            this.n = n;
+        }
+
+    }
+    
+
+    // public static void perfectFriends(int n, int k){
+    //     ArrayList<Pair_3>[] newgraph = new ArrayList[n];
+    //     for(int i=0;i<n;i++){
+    //         newgraph[i] = new ArrayList<>();
+    //     }
+
+
+    //     newgraph[u].add(new Edge(v,w));
+    //     graph[v].add(new Edge(u,w));
+
+
+
+
+    //     ArrayList<ArrayList<Integer>> comp = new ArrayList<>();
+    //     boolean[] visited = new boolean[n];
+    //     for(int i=0;i<n;i++){
+    //         if(visited[i] == false){
+    //             graphcomp(i,visited,comp);
+    //             comps.add(comp);
+    //         }
+    //     }
+    //     // System.out.println(comps);
+
+    //     int paircount = 0;
+    //     for(int i=0;i<comps.size();i++){
+    //         for(int j=i+1;j<comps.size();j++){
+    //             int count = comps.get(i).size()*comps.get(j).size();
+    //             pairscount += count;
+    //         }
+    //     }
+
+    //     System.out.println(count);
+    // }
+
+    // public static void graphcomp(int src,boolean[] visited, ArrayList<Integer>comp){
+    //     visited[src] = true;
+    //     comp.add(src);
+    //     for(Pair_3 e : newgraph[src]){
+    //         if(visited[e.n]!=true){
+    //             graphcomp(e.n,visited,comp);
+    //         }
+    //     }
+
+    //     visited[src] = false;
+    // }
+
     public static void main(String[] args){
         constructGraph();
  
-        solve();
+        // solve();
+        // bfs();
+        bipartite();
     }
 }
