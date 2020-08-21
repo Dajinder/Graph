@@ -409,16 +409,7 @@ public class graph{
 
 
     
-    public static class Pair_3{
-        int v;
-        int n;
-
-        Pair_3(int v, int n){
-            this.v = v;
-            this.n = n;
-        }
-
-    }
+    
     
 
     // public static void perfectFriends(int n, int k){
@@ -467,11 +458,57 @@ public class graph{
     //     visited[src] = false;
     // }
 
+
+    public static class Pair_3{
+        int v;
+        int time;
+
+        Pair_3(int v, int time){
+            this.v = v;
+            this.time = time;
+        }
+
+    }
+
+    public static void spredInfection(int src, int t){
+        ArrayDeque<Pair_3> que = new ArrayDeque<>();
+        que.add(new Pair_3(src,1));
+        int[] visited = new int[N];
+        int count = 0;
+        while(que.size()!=0){
+            // remove
+            Pair_3 rem = que.removeFirst();
+
+            // mark
+            if(visited[rem.v]>0){
+                continue;
+            }
+            visited[rem.v] = rem.time;
+            if(rem.time>t){
+                break;
+            }
+            count++;
+
+            // add
+
+            for(Edge e:graph[rem.v]){
+                if(visited[e.v] == 0){
+                    que.add(new Pair_3(e.v,rem.time+1));
+                }
+            }
+        }
+
+        System.out.println(count);
+    }
+
+
+
     public static void main(String[] args){
         constructGraph();
  
         // solve();
         // bfs();
-        bipartite();
+        // bipartite();
+        spredInfection(6,3);
     }
 }
