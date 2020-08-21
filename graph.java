@@ -1,3 +1,4 @@
+import java.util.PriorityQueue;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.HashSet;
@@ -37,9 +38,9 @@ public class graph{
         }
 
         addEdge(0, 1, 10);
-        addEdge(0, 3, 10);
+        addEdge(0, 3, 40);
         addEdge(1, 2, 10);
-        addEdge(2, 3, 40);
+        addEdge(2, 3, 10);
         // addEdge(2, 5, 10);
         addEdge(3, 4, 2);
         addEdge(4, 5, 2);
@@ -501,6 +502,96 @@ public class graph{
         System.out.println(count);
     }
 
+    public static class Pair_4 implements Comparable<Pair_4>{
+        int v ;
+        String psf;
+        int wsf;
+        Pair_4(int v,String psf, int wsf){
+            this.v = v;
+            this.psf = psf;
+            this.wsf = wsf;
+        }
+
+        public int compareTo(Pair_4 o){
+            return this.wsf - o.wsf;
+        }
+    }
+    
+    public static void shortestweigthdist(int src){ //djkstra's algorithm
+        PriorityQueue<Pair_4> pq = new PriorityQueue<>();
+        pq.add(new Pair_4(src,src+"",0));
+        boolean[] visited = new boolean[N];
+        while(pq.size()!=0){
+            // remove
+            Pair_4 rem = pq.remove();
+
+            // mark
+            if(visited[rem.v] == true){
+                continue;
+            }
+            visited[rem.v] = true;
+
+            // work
+            System.out.println(rem.v + " via " + rem.psf + " @ "+ rem.wsf);
+            
+            // add
+            for(Edge e:graph[rem.v]){
+                if(visited[e.v]==false){
+                    pq.add(new Pair_4(e.v, rem.psf+e.v, rem.wsf+e.w));
+                }
+            }
+        }
+
+    }
+
+    public static class Pair_5 implements Comparable<Pair_5>{
+        int v;
+        int acqv;
+        int wt;
+
+        Pair_5(int v, int acqv, int wt){
+            this.v = v;
+            this.acqv = acqv;
+            this.wt = wt;
+        }
+
+        public int compareTo(Pair_5 o){
+            return this.wt - o.wt;
+        }
+
+    }
+
+
+    public static void minimumSpanningTree(int src){
+        PriorityQueue<Pair_5>pq = new PriorityQueue<>();
+        pq.add(new Pair_5(src,-1,0));
+        boolean[] visited = new boolean[N];
+
+        while(pq.size()!=0){
+            // remove
+            Pair_5 rem = pq.remove();
+
+            // mark
+            if(visited[rem.v]==true){
+                continue;
+            }
+            visited[rem.v] = true;
+
+            // work
+            if(rem.acqv!=-1){
+                System.out.println(rem.v + " acq. from " + rem.acqv + " @ " + rem.wt);
+            }
+            
+
+            // add
+            for(Edge e:graph[rem.v]){
+                if(visited[e.v]==false){
+                    pq.add(new Pair_5(e.v,rem.v,e.w));
+                }
+            }
+        }
+    }
+
 
 
     public static void main(String[] args){
@@ -509,6 +600,8 @@ public class graph{
         // solve();
         // bfs();
         // bipartite();
-        spredInfection(6,3);
+        // spredInfection(6,3);
+        // shortestweigthdist(0);
+        minimumSpanningTree(0);
     }
 }
