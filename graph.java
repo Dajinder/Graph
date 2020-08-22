@@ -1,3 +1,4 @@
+import java.util.Stack;
 import java.util.PriorityQueue;
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -592,7 +593,32 @@ public class graph{
         }
     }
 
+    public static void topo_dfs(int src, boolean[] visited,Stack st){
+        visited[src] = true;
 
+        for(Edge e: graph[src]){
+            if(visited[e.v]!=true){
+                topo_dfs(e.v,visited,st);
+            }
+        }
+        st.push(src);
+    }
+
+    public static void topologicalsort(){
+        boolean [] visited = new boolean[N];
+        Stack<Integer> st = new Stack<>();
+
+        for(int i=0;i<N;i++){
+            if(visited[i]!=true){
+                topo_dfs(i,visited,st);
+            }
+        }
+
+
+        while(st.size()!=0){
+            System.out.print(st.pop()+" ");
+        }
+    }
 
     public static void main(String[] args){
         constructGraph();
@@ -602,6 +628,7 @@ public class graph{
         // bipartite();
         // spredInfection(6,3);
         // shortestweigthdist(0);
-        minimumSpanningTree(0);
+        // minimumSpanningTree(0);
+        topologicalsort();
     }
 }
