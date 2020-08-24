@@ -15,12 +15,13 @@ public class graph{
         }
     }
 
-    static int N = 7;
+    // static int N = 7;
+    static int N = 8; // use this for topological sort
     static ArrayList<Edge>[] graph = new ArrayList[N];
 
     public static void addEdge(int u, int v, int w){
         graph[u].add(new Edge(v,w));
-        graph[v].add(new Edge(u,w)); // to make bidirectional
+        // graph[v].add(new Edge(u,w)); // to make bidirectional // comment this for topo sort to make graph unidirectional
     }
 
     public static void display(){
@@ -38,15 +39,30 @@ public class graph{
             graph[i] = new ArrayList<Edge>();
         }
 
-        addEdge(0, 1, 10);
-        addEdge(0, 3, 40);
-        addEdge(1, 2, 10);
-        addEdge(2, 3, 10);
-        // addEdge(2, 5, 10);
-        addEdge(3, 4, 2);
-        addEdge(4, 5, 2);
-        addEdge(4, 6, 8);
-        addEdge(5, 6, 3);
+        // addEdge(0, 1, 10);
+        // addEdge(0, 3, 40);
+        // addEdge(1, 2, 10);
+        // addEdge(2, 3, 10);
+        // // addEdge(2, 5, 10);
+        // addEdge(3, 4, 2);
+        // addEdge(4, 5, 2);
+        // addEdge(4, 6, 8);
+        // addEdge(5, 6, 3);
+
+
+        //==============Use below set of edges for topo sort====================
+
+        addEdge(0,1,10);
+        addEdge(0,6,10);
+        addEdge(1,2,10);
+        addEdge(2,3,10);
+        addEdge(5,3,10);
+        addEdge(4,5,10);
+        addEdge(7,4,10);
+        addEdge(7,6,10);
+        
+
+
 
         // display();
     }
@@ -620,6 +636,44 @@ public class graph{
         }
     }
 
+    public static void topo_bfs(){   //khans algo 
+        int[] incident_edges = new int[N];
+        
+        
+        for(int i=0;i<N;i++){
+            for(Edge e:graph[i]){
+                incident_edges[e.v]++;
+            }
+        }
+
+
+        Queue<Integer>que = new ArrayDeque<>();
+        Queue<Integer>ans = new ArrayDeque<>();
+        for(int i=0;i<incident_edges.length;i++){
+            // System.out.print(incident_edges[i]);
+            if(incident_edges[i]==0){
+                que.add(i);
+            }
+        }
+
+        while(que.size()!=0){
+            int vtx = que.remove();
+            
+            for(Edge e:graph[vtx]){
+                if(--incident_edges[e.v]==0){
+                    ans.add(e.v);
+                }
+            }
+        }
+
+        
+            while(ans.size()!=0){
+                System.out.print(ans.remove()+" ");
+            }
+        
+
+    }
+
     public static void main(String[] args){
         constructGraph();
  
@@ -629,6 +683,7 @@ public class graph{
         // spredInfection(6,3);
         // shortestweigthdist(0);
         // minimumSpanningTree(0);
-        topologicalsort();
+        // topologicalsort();
+        topo_bfs();
     }
 }
