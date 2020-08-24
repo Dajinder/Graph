@@ -15,13 +15,13 @@ public class graph{
         }
     }
 
-    // static int N = 7;
-    static int N = 8; // use this for topological sort
+    static int N = 7;
+    // static int N = 8; // use this for topological sort
     static ArrayList<Edge>[] graph = new ArrayList[N];
 
     public static void addEdge(int u, int v, int w){
         graph[u].add(new Edge(v,w));
-        // graph[v].add(new Edge(u,w)); // to make bidirectional // comment this for topo sort to make graph unidirectional
+        graph[v].add(new Edge(u,w)); // to make bidirectional // comment this for topo sort to make graph unidirectional
     }
 
     public static void display(){
@@ -39,27 +39,27 @@ public class graph{
             graph[i] = new ArrayList<Edge>();
         }
 
-        // addEdge(0, 1, 10);
-        // addEdge(0, 3, 40);
-        // addEdge(1, 2, 10);
-        // addEdge(2, 3, 10);
-        // // addEdge(2, 5, 10);
-        // addEdge(3, 4, 2);
-        // addEdge(4, 5, 2);
-        // addEdge(4, 6, 8);
-        // addEdge(5, 6, 3);
+        addEdge(0, 1, 10);
+        addEdge(0, 3, 40);
+        addEdge(1, 2, 10);
+        addEdge(2, 3, 10);
+        // addEdge(2, 5, 10);
+        addEdge(3, 4, 2);
+        addEdge(4, 5, 2);
+        addEdge(4, 6, 8);
+        addEdge(5, 6, 3);
 
 
         //==============Use below set of edges for topo sort====================
 
-        addEdge(0,1,10);
-        addEdge(0,6,10);
-        addEdge(1,2,10);
-        addEdge(2,3,10);
-        addEdge(5,3,10);
-        addEdge(4,5,10);
-        addEdge(7,4,10);
-        addEdge(7,6,10);
+        // addEdge(0,1,10);
+        // addEdge(0,6,10);
+        // addEdge(1,2,10);
+        // addEdge(2,3,10);
+        // addEdge(5,3,10);
+        // addEdge(4,5,10);
+        // addEdge(7,4,10);
+        // addEdge(7,6,10);
         
 
 
@@ -674,6 +674,47 @@ public class graph{
 
     }
 
+
+    public static class Pair_6{
+        int v;
+        String psf;
+
+        Pair_6(int v, String psf){
+            this.v = v;
+            this.psf = psf;
+        }
+    }
+
+
+    //same as bfs, but instead of queue we use stack to make it iterative and it will trace reverse euler
+    public static void dfs_iterative(int src){  
+        boolean[] visited = new boolean[N];
+        Stack<Pair_6> st = new Stack<>();
+
+        st.push(new Pair_6(src,src+" "));
+        while(st.size()!=0){
+            // remove
+            Pair_6 rem = st.pop();
+
+            // mark
+            if(visited[rem.v]==true){
+                continue;
+            }else{
+                visited[rem.v] = true;
+            }
+
+            // work
+            System.out.println(rem.v + " @ " + rem.psf);
+
+            // add
+            for(Edge e:graph[rem.v]){
+                if(visited[e.v]!=true){
+                    st.push(new Pair_6(e.v, rem.psf+e.v));
+                }
+            }
+        }
+    }
+
     public static void main(String[] args){
         constructGraph();
  
@@ -684,6 +725,7 @@ public class graph{
         // shortestweigthdist(0);
         // minimumSpanningTree(0);
         // topologicalsort();
-        topo_bfs();
+        // topo_bfs();
+        dfs_iterative(0);
     }
 }
